@@ -1,0 +1,6 @@
+CREATE USER hyper_user WITH PASSWORD 'password' SUPERUSER ;
+
+CREATE DATABASE claythis;
+
+GRANT ALL PRIVILEGES ON DATABASE claythis TO hyper_user;
+

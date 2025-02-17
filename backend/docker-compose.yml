@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: hyper_user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: claythis
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  claythis-api:
+    build: ./
+    container_name: claythis-api
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: "${DATABASE_URL}"
+    ports:
+      - "8000:8000"
+    command: ["sh", "-c", "npx prisma migrate dev && npm run start:dev"]
+
+volumes:
+  pgdata:

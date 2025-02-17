@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #37474f;
+  --secondary: #1E88E5;
+  --main: #1F2937;
+  --lightGray: #eaeef3;
+}
+
+/* Add custom transition classes */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* styles fyle system structure */
+/* styles/globals.css */
+.file-system {
+  font-family: Arial, sans-serif;
+}
+
+.file-system ul {
+  list-style-type: none;
+  padding-left: 16px;
+  position: relative;
+}
+
+.file-system ul ul {
+  margin-left: 16px;
+}
+
+.file-system li {
+  position: relative;
+  padding-left: 16px;
+}
+
+.file-system li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background-color: #ccc;
+}
+
+.file-system li::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 10px;
+  height: 1px;
+  background-color: #ccc;
+}
+
+.file-system li:last-child::before {
+  height: 10px;
+}
+
+/* No connector lines for the first level */
+.file-system > ul > li::before,
+.file-system > ul > li::after {
+  display: none;
+}
+
+.file-system .menu-item {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.file-system .arrow {
+  margin-right: 2px;
+  font-size: 12px;
+  color: #666;
+}
+
+.file-system .menu-text {
+  padding: 2px 5px;
+}
+
+.file-system ul.collapsed {
+  display: none;
+}
+
+/* responsive */
+@media only screen and (max-width: 600px){
+  .file-system ul {
+    list-style-type: none;
+    padding-left: 8px;
+    position: relative;
+  }
+  
+  .file-system ul ul {
+    margin-left: 8px;
+  }
+  
+  .file-system li {
+    position: relative;
+    padding-left: 8px;
+  }
+}
+
+@media only screen and (min-width: 767px) and (max-width: 992px){
+  .file-system ul {
+    list-style-type: none;
+    padding-left: 12px;
+    position: relative;
+  }
+  
+  .file-system ul ul {
+    margin-left: 12px;
+  }
+  
+  .file-system li {
+    position: relative;
+    padding-left: 12px;
+  }
+}
