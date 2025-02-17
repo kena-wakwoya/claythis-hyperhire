@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../store/store";
 import { setMenus } from "../store/slices/menuSlice";
 import { deleteMenu, fetchMenus } from "../lib/api";
-import { MenuItem, MenuLabel } from "../types";
+import { MenuItem } from "../types";
 import FileSystemMenu from "./FileSystemMenu";
 import MenuDetail from "./MenuDetail";
 import { findMenuById } from "../utils/utils";

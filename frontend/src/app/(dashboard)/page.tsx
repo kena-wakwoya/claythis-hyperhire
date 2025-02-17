@@ -4,7 +4,6 @@ import Image from "next/image";
 import Breadcrumb from "../components/Breadcrumb";
 import MenuTree from "../components/MenuTree";
 import { useState } from "react";
-import Sidebar from "../components/Sidebar";
 import { menus, otherMenus } from "../utils/menuLabels";
 import MobileSidebar from "../components/MobileSidebar";
 

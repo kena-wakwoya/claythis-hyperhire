@@ -2,11 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "../../app/globals.css";
 
-import { Provider } from "react-redux";
 import Sidebar from "@/app/components/Sidebar";
-import { store } from "@/app/store/store";
 import ReduxProvider from "../store/ReduxProvider";
-import { MenuItem, MenuLabel } from "../types";
 import { menus, otherMenus } from "../utils/menuLabels";
 import { Toaster } from "react-hot-toast";
 

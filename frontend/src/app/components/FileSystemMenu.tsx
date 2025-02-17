@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { MenuItem as MenuItemType } from "../types";
 import Image from "next/image";
-import { deleteMenu } from "../lib/api";
-import { error_toaster, success_toaster } from "../utils/toaster";
 import { useDispatch } from "react-redux";
-import { deleteMenu as deleteMenuAction } from "../store/slices/menuSlice";
 
 const MenuItem = ({
   menu,
