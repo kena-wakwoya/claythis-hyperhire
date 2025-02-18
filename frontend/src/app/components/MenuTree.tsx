@@ -1,20 +1,13 @@
-// components/MenuTree.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../store/store";
-import { MenuItem } from "../types";
+import { ApiResponse, MenuItem } from "../types";
 import FileSystemMenu from "./FileSystemMenu";
 import MenuDetail from "./MenuDetail";
-import { success_toaster } from "../utils/toaster";
-import {
-  fetchMenus,
-  addMenu,
-  updateMenu,
-  deleteMenu,
-  fetchMenusByID,
-} from "../lib/api";
+import { error_toaster, success_toaster } from "../utils/toaster";
+import { fetchMenus, deleteMenu, fetchMenusByID } from "../lib/api";
 import ConfirmationModal from "./Modal";
 import Loader from "./Loader";
 import { findMenuById } from "../utils/utils";
@@ -23,17 +16,15 @@ import {
   setSelectedMenu,
   setLoading,
   setError,
-  addMenu as addMenuAction,
-  updateMenu as updateMenuAction,
   deleteMenu as deleteMenuAction,
+  setSubSelectedMenu,
 } from "../store/slices/menuSlice";
 
 const MenuTree = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { menus, selectedMenu, loading } = useSelector(
+  const { menus, selectedMenu, loading, selectedSubmenu } = useSelector(
     (state: RootState) => state.menu
   );
-  const [selectedSubmenu, setSelectedSubmenu] = useState<MenuItem | null>(null);
   const [parentMenuForNew, setParentMenuForNew] = useState<MenuItem | null>(
     null
   );
@@ -43,22 +34,29 @@ const MenuTree = () => {
   const [menuToDelete, setMenuToDelete] = useState<MenuItem | null>(null);
   const [isSubMenuClick, setIsSubMenuClicked] = useState<boolean>(false);
   const [buttonType, setButtonType] = useState("expand_all");
+  const [selectedMenuId, setSelectedMenuId] = useState("");
 
   useEffect(() => {
     fetchAllMenus();
-  }, []);
-
+  }, [dispatch]);
   const fetchAllMenus = async () => {
     dispatch(setLoading(true));
     try {
       const response = await fetchMenus();
       if (response) {
         dispatch(setMenus(response));
+        dispatch(setSelectedMenu(response[0]));
+        setSelectedMenuId(response[0].id);
       } else {
         dispatch(setError("No menus found."));
       }
-    } catch (error) {
-      dispatch(setError("Failed to fetch menus"));
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        error_toaster(error.message);
+        dispatch(setError(error.message));
+      } else {
+        dispatch(setError("Failed to fetch menus"));
+      }
     } finally {
       dispatch(setLoading(false));
     }
@@ -69,7 +67,7 @@ const MenuTree = () => {
   ) => {
     const selectedId = event.target.value;
     dispatch(setLoading(true));
-
+    setSelectedMenuId(selectedId);
     try {
       const response = await fetchMenusByID(selectedId);
       if (response) {
@@ -77,15 +75,19 @@ const MenuTree = () => {
       } else {
         dispatch(setError("Menu not found."));
       }
-    } catch (error) {
-      dispatch(setError("Failed to fetch menu by ID"));
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        dispatch(setError(error.message));
+      } else {
+        dispatch(setError("Failed to fetch menu by ID"));
+      }
     } finally {
       dispatch(setLoading(false));
     }
   };
 
   const handleSelectSubMenu = (menu: MenuItem) => {
-    setSelectedSubmenu(menu);
+    dispatch(setSubSelectedMenu(menu));
     setParentMenuForNew(null);
   };
 
@@ -93,7 +95,7 @@ const MenuTree = () => {
     const parentMenu = findMenuById(menus, menuId);
     if (parentMenu) {
       setParentMenuForNew(parentMenu);
-      setSelectedSubmenu(null);
+      dispatch(setSubSelectedMenu({} as MenuItem));
     }
   };
 
@@ -107,55 +109,71 @@ const MenuTree = () => {
     dispatch(setLoading(true));
 
     try {
-      const response: any = await deleteMenu(menuToDelete.id);
+      const response: ApiResponse = await deleteMenu(menuToDelete.id);
       if (response?.success) {
         dispatch(deleteMenuAction(menuToDelete.id));
         success_toaster(response.message);
+
+        const resp = await fetchMenus();
+        if (resp) {
+          dispatch(setMenus(resp));
+          const data: MenuItem[] = resp.filter(
+            (item: MenuItem) => item.id === selectedMenuId
+          );
+          dispatch(setSelectedMenu(data[0]));
+        }
       } else {
         dispatch(setError(response?.message || "Failed to delete menu"));
       }
-    } catch (error) {
-      dispatch(setError("Failed to delete menu"));
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        error_toaster(error.message);
+        dispatch(setError(error.message));
+      } else {
+        dispatch(setError("Failed to delete menu"));
+      }
     } finally {
       dispatch(setLoading(false));
       setIsModalOpen(false);
       setMenuToDelete(null);
     }
   };
-
   const handleSave = async (menu: MenuItem) => {
     console.log("menu: ", menu);
-    dispatch(setLoading(true));
+    // dispatch(setLoading(true));
 
-    try {
-      let response: any;
-      if (menu.id) {
-        response = await updateMenu(menu, menu.id);
+    // try {
+    //   let response: any;
+    //   if (menu.id) {
+    //     response = await updateMenu(menu, menu.id);
 
-        if (response?.success) {
-          dispatch(updateMenuAction(response.data));
-          success_toaster(response.message);
-        }
-      } else {
-        response = await addMenu(menu);
+    //     if (response?.success) {
+    //       dispatch(updateMenuAction(response.data));
+    //       success_toaster(response.message);
+    //       const resp = await fetchMenusByID(menu.id);
+    //       console.log("data: ", resp);
+    //       dispatch(setSelectedMenu(resp));
+    //     }
+    //   } else {
+    //     response = await addMenu(menu);
 
-        if (response?.success) {
-          dispatch(addMenuAction(response.data));
-          success_toaster(response.message);
-          fetchAllMenus(); // Only refetch menus when adding a new menu
-        }
-      }
-    } catch (error) {
-      dispatch(setError("Failed to save menu"));
-    } finally {
-      dispatch(setLoading(false));
-    }
+    //     if (response?.success) {
+    //       dispatch(addMenuAction(response.data));
+    //       success_toaster(response.message);
+    //       fetchAllMenus();
+    //     }
+    //   }
+    // } catch (error) {
+    //   dispatch(setError("Failed to save menu"));
+    // } finally {
+    //   dispatch(setLoading(false));
+    // }
   };
 
   return (
     <div className="p-4 w-full flex flex-col">
       {loading ? (
-        <Loader width="20" height="20" color="red" />
+        <Loader />
       ) : (
         <div className="flex flex-col">
           <label>Menu</label>
@@ -219,6 +237,7 @@ const MenuTree = () => {
               parentMenu={parentMenuForNew}
               onSave={handleSave}
               isSubMenuClick={isSubMenuClick}
+              selectedMenuId={selectedMenuId}
             />
           </div>
         </div>

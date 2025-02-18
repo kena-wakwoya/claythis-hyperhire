@@ -1,4 +1,3 @@
-// components/Sidebar.tsx
 "use client";
 import { MenuLabel } from "../types";
 import MenuItem from "./MenuItem";
@@ -13,12 +12,14 @@ export default function Sidebar({
   otherMenus: MenuLabel[];
 }) {
   const [isOpen, setIsOpen] = useState(true);
-
+  const [expandedId, setExpandedId] = useState<number | null>(null);
   const toggle = () => setIsOpen(!isOpen);
-
+  const handleToggleExpand = (id: number) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
   return (
     <div
-      className={`hidden md:block h-screen bg-gray-800 text-white rounded-3xl py-3 px-5 transition-all duration-300 ease-in-out ${
+      className={`hidden md:block h-screen bg-gray-800 text-white text-4xl font-bold rounded-3xl py-3 px-5 transition-all duration-300 ease-in-out ${
         isOpen ? "w-64" : "w-28 flex flex-col items-center justify-center"
       }`}
     >
@@ -48,24 +49,28 @@ export default function Sidebar({
           </svg>
         </span>
       </div>
-      {/* <ul className="p-5 bg-primary rounded-2xl flex flex-col gap-3">
+      <ul className="py-2 px-2 bg-transparent rounded-2xl flex flex-col gap-3">
         {menus.map((menu) => (
-          <MenuItem key={menu.id} menu={menu} isOpen={isOpen} />
+          <MenuItem
+            key={menu.id}
+            menu={menu}
+            isOpen={isOpen}
+            toggle={toggle}
+            isExpanded={menu.id === expandedId}
+            onToggleExpand={handleToggleExpand}
+          />
         ))}
       </ul>
-      <ul className="p-5 bg-transparent rounded-2xl flex flex-col gap-3">
+      <ul className="px-2 bg-transparent rounded-2xl flex flex-col gap-3">
         {otherMenus.map((menu) => (
-          <MenuItem key={menu.id} menu={menu} isOpen={isOpen} />
-        ))}
-      </ul> */}
-      <ul className="p-5 bg-primary rounded-2xl flex flex-col gap-3">
-        {menus.map((menu) => (
-          <MenuItem key={menu.id} menu={menu} isOpen={isOpen} toggle={toggle} />
-        ))}
-      </ul>
-      <ul className="p-5 bg-transparent rounded-2xl flex flex-col gap-3">
-        {otherMenus.map((menu) => (
-          <MenuItem key={menu.id} menu={menu} isOpen={isOpen} toggle={toggle} />
+          <MenuItem
+            key={menu.id}
+            menu={menu}
+            isOpen={isOpen}
+            toggle={toggle}
+            isExpanded={menu.id === expandedId}
+            onToggleExpand={handleToggleExpand}
+          />
         ))}
       </ul>
     </div>

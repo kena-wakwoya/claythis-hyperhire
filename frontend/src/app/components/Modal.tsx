@@ -1,4 +1,3 @@
-// components/ConfirmationModal.tsx
 "use client";
 
 import React from "react";
@@ -26,7 +25,7 @@ const ConfirmationModal = ({
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <p className="mb-4">{message}</p>
         <p className="text-black font-bold self-center flex items-center justify-center pb-3 -mt-3">
-          "{menuTobeDeleted?.name}"?
+          `&quot;${menuTobeDeleted?.name}&quot;?`
         </p>
         <div className="flex justify-end gap-4">
           <button

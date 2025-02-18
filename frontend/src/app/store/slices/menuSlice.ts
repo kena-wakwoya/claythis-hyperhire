@@ -1,10 +1,11 @@
-// store/slices/menuSlice.ts
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { MenuItem } from "../../types";
 
 interface MenuState {
   menus: MenuItem[];
   selectedMenu: MenuItem | null;
+  selectedSubmenu: MenuItem | null;
   loading: boolean;
   error: string | null;
 }
@@ -12,6 +13,7 @@ interface MenuState {
 const initialState: MenuState = {
   menus: [],
   selectedMenu: null,
+  selectedSubmenu: null,
   loading: false,
   error: null,
 };
@@ -25,6 +27,9 @@ const menuSlice = createSlice({
     },
     setSelectedMenu(state, action: PayloadAction<MenuItem>) {
       state.selectedMenu = action.payload;
+    },
+    setSubSelectedMenu(state, action: PayloadAction<MenuItem>) {
+      state.selectedSubmenu = action.payload;
     },
     setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
@@ -62,6 +67,7 @@ export const {
   addMenu,
   updateMenu,
   deleteMenu,
+  setSubSelectedMenu
 } = menuSlice.actions;
 
 export default menuSlice.reducer;

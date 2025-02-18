@@ -32,7 +32,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ReduxProvider>
-          <div className="flex bg-white md:p-8">
+          <div className="flex bg-white md:p-2">
             <Sidebar menus={menus} otherMenus={otherMenus} />
             <main className="flex-1 p-4">{children}</main>
             <Toaster />

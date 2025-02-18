@@ -13,19 +13,27 @@ export default function Home() {
   const showSidebar = () => setOpenSidebar(true);
   const hideSidebar = () => setOpenSidebar(false);
 
-
   return (
     <div className="flex flex-col">
       {/* button to toggle sidebar */}
-      {!openSidebar && <Image
-        src={"/icons/ham.svg"}
-        width={24}
-        height={24}
-        alt="Hamburgur Icon"
-        className="text-black mb-3 block md:hidden cursor-pointer"
-        onClick={showSidebar}
-      />}
-      {openSidebar && <MobileSidebar menus={menus} otherMenus={otherMenus} isMobile={true} hideSidebar={hideSidebar} />}
+      {!openSidebar && (
+        <Image
+          src={"/icons/ham.svg"}
+          width={24}
+          height={24}
+          alt="Hamburgur Icon"
+          className="text-black mb-3 block md:hidden cursor-pointer"
+          onClick={showSidebar}
+        />
+      )}
+      {openSidebar && (
+        <MobileSidebar
+          menus={menus}
+          otherMenus={otherMenus}
+          isMobile={true}
+          hideSidebar={hideSidebar}
+        />
+      )}
       <Breadcrumb
         pageLabel="Menus"
         base={{ label: "Menus", route: "/" }}

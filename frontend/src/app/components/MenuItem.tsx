@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MenuLabel } from "../types";
-import { useState } from "react";
 import Image from "next/image";
 
 interface MenuItemProps {
@@ -10,6 +9,8 @@ interface MenuItemProps {
   isOpen: boolean;
   toggle?: () => void;
   level?: number; // Add level for indentation
+  isExpanded: boolean;
+  onToggleExpand: (id: number) => void;
 }
 
 export default function MenuItem({
@@ -17,28 +18,30 @@ export default function MenuItem({
   isOpen,
   toggle,
   level,
+  isExpanded,
+  onToggleExpand,
 }: MenuItemProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
   const pathname = usePathname();
-
-  const toggleExpand = () => setIsExpanded(!isExpanded);
 
   // Check if the current menu item is active
   const isActive = pathname === menu.path;
+  const handleToggleExpand = () => {
+    onToggleExpand(menu.id);
+  };
 
   return (
-    <li>
+    <li className={`${isExpanded && "p-1 bg-gray-700 rounded-lg"}`}>
       {menu.isParent ? (
         <button
-          onClick={toggleExpand}
+          onClick={() => handleToggleExpand()}
           className={`cursor-pointer p-2 hover:bg-gray-700 flex gap-3 w-full items-center ${
-            isActive ? "bg-[#D4E157] text-black rounded-2xl" : ""
+            isActive ? "bg-[#5ADB5A] text-black rounded-2xl" : ""
           }`}
           style={{ paddingLeft: `${level ? level * 16 : 16}px` }}
         >
           {menu.icon && (
             <Image
-              src={menu.icon}
+              src={isExpanded ? menu.icon : "/icons/competition.svg"}
               width={24}
               height={24}
               alt={menu.label}
@@ -51,7 +54,7 @@ export default function MenuItem({
         <Link
           href={`${menu.path.toLowerCase()}`}
           className={`cursor-pointer p-2 hover:bg-gray-700 flex gap-3 w-full items-center ${
-            isActive ? "bg-[#D4E157] text-black rounded-2xl" : ""
+            isActive ? "bg-[#5ADB5A] text-black rounded-2xl" : ""
           }`}
           style={{ paddingLeft: `${level ? level * 16 : 16}px` }}
         >
@@ -76,6 +79,8 @@ export default function MenuItem({
               isOpen={isOpen}
               toggle={toggle}
               level={level}
+              isExpanded={isExpanded}
+              onToggleExpand={onToggleExpand}
             />
           ))}
         </ul>

@@ -1,30 +1,41 @@
 "use client";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 interface BreadcrumbProps {
   pageLabel: string;
   pageName?: string;
-  middle?: {label:string, route?:string};
-  base: {label:string, route:string};
-  icon?: any
+  middle?: { label: string; route?: string };
+  base: { label: string; route: string };
+  icon?: string | StaticImageData;
 }
-const Breadcrumb = ({ pageName, middle, pageLabel, base, icon }: BreadcrumbProps) => {
+
+const Breadcrumb = ({
+  pageName,
+  middle,
+  pageLabel,
+  base,
+  icon,
+}: BreadcrumbProps) => {
   const router = useRouter();
+
   return (
     <div className="flex flex-col-reverse md:gap-10 gap-5">
+      {/* Breadcrumb Icon and Page Label */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary">
-          <Image src={icon} width="20" height="20" alt="Breadcrumb picture" />
-        </div>
-      <h2 className="text-3xl font-bold text-black">
-        {pageLabel} 
-      </h2>
+        {icon && (
+          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary">
+            <Image src={icon} width={20} height={20} alt="Breadcrumb icon" />
+          </div>
+        )}
+        <h2 className="text-3xl font-bold text-black">{pageLabel}</h2>
       </div>
 
+      {/* Breadcrumb Navigation */}
       <nav>
         <ol className="flex items-center text-xs gap-2">
+          {/* Base Route */}
           <li>
             <Link
               className="font-medium capitalize flex items-center gap-2"
@@ -32,18 +43,20 @@ const Breadcrumb = ({ pageName, middle, pageLabel, base, icon }: BreadcrumbProps
             >
               <Image
                 src="/icons/suit-icon.svg"
-                alt="Left Poinitng Button Arrow"
+                alt="Base Route Icon"
                 width={20}
                 height={16}
               />
               {" / "} {base.label}
             </Link>
           </li>
+
+          {/* Middle Route */}
           {middle && (
             <div className="flex items-center">
               <Image
                 src="/icons/right.svg"
-                alt="Left Poinitng Button Arrow"
+                alt="Right Arrow"
                 width={24}
                 height={24}
               />
@@ -54,7 +67,7 @@ const Breadcrumb = ({ pageName, middle, pageLabel, base, icon }: BreadcrumbProps
                 >
                   <Image
                     src="/icons/suit-icon.svg"
-                    alt="Left Poinitng Button Arrow"
+                    alt="Middle Route Icon"
                     width={20}
                     height={16}
                   />
@@ -63,15 +76,17 @@ const Breadcrumb = ({ pageName, middle, pageLabel, base, icon }: BreadcrumbProps
               </li>
             </div>
           )}
+
+          {/* Page Name */}
           {pageName && (
-            <div className="flex   items-center">
+            <div className="flex items-center">
               <Image
                 src="/icons/right.svg"
-                alt="Left Poinitng Button Arrow"
+                alt="Right Arrow"
                 width={24}
                 height={24}
               />
-              <li className="font-medium ">{pageName}</li>
+              <li className="font-medium">{pageName}</li>
             </div>
           )}
         </ol>

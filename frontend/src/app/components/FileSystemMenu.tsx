@@ -178,7 +178,7 @@ const FileSystemMenu = ({
         <ul>
           {menus.map((menu) => (
             <MenuItem
-              key={menu.id}
+              key={`${menu.name}-${menu.id}`}
               menu={menu}
               onAdd={onAdd}
               onDelete={onDelete}

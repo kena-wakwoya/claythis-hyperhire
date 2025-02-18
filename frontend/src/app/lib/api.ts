@@ -1,5 +1,5 @@
 // lib/api.ts
-import { MenuItem } from "../types";
+import { ApiResponse, MenuItem } from "../types";
 import axiosInstance from "./axiosInstance";
 
 export const fetchMenus = async (): Promise<MenuItem[]> => {
@@ -17,20 +17,17 @@ export const fetchMenusByID = async (menuId: string | null): Promise<MenuItem> =
   return response.data ?? {} as MenuItem; 
 };
 
-export const addMenu = async (menu: MenuItem): Promise<MenuItem> => {
+export const addMenu = async (menu: MenuItem): Promise<ApiResponse> => {
   const response = await axiosInstance.post("/menus", menu);
-  console.log("payload addd: ", response.data);
   return response.data ?? {} as MenuItem; // Ensure proper return type
 };
 
-export const updateMenu = async (menu: MenuItem, menuId: string): Promise<MenuItem> => {
+export const updateMenu = async (menu: MenuItem, menuId: string): Promise<ApiResponse> => {
   const response = await axiosInstance.put(`/menus/${menuId}`, menu);
-  console.log("payload", response.data);
-  return response.data ?? {} as MenuItem;
+  return response.data ?? {};
 };
 
-export const deleteMenu = async (menuId: string): Promise<{ menuId: string }> => {
+export const deleteMenu = async (menuId: string): Promise<ApiResponse> => {
   const response = await axiosInstance.delete(`/menus/${menuId}`);
-  console.log("payload", response.data);
   return response.data ?? { menuId };
 };
