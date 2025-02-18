@@ -11,7 +11,7 @@ export const fetchMenus = async (): Promise<MenuItem[]> => {
   return payload ?? []; // Ensure it returns an array
 };
 
-export const fetchMenusByID = async (menuId: string): Promise<MenuItem[]> => {
+export const fetchMenusByID = async (menuId: string | null): Promise<MenuItem> => {
   const response = await axiosInstance.get(`/menus/${menuId}`);
   console.log("payload", response.data);
   return response.data ?? {} as MenuItem; 
@@ -19,7 +19,7 @@ export const fetchMenusByID = async (menuId: string): Promise<MenuItem[]> => {
 
 export const addMenu = async (menu: MenuItem): Promise<MenuItem> => {
   const response = await axiosInstance.post("/menus", menu);
-  console.log("payload", response.data);
+  console.log("payload addd: ", response.data);
   return response.data ?? {} as MenuItem; // Ensure proper return type
 };
 

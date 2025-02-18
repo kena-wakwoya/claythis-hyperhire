@@ -2,7 +2,7 @@
 "use client";
 import { MenuLabel } from "../types";
 import MenuItem from "./MenuItem";
-import { useState } from 'react';
+import { useState } from "react";
 import Image from "next/image";
 
 export default function Sidebar({
@@ -23,12 +23,16 @@ export default function Sidebar({
       }`}
     >
       <div className="flex items-center justify-between p-5 mb-3">
-        {
-          isOpen && 
+        {isOpen && (
           <span>
-          <Image src="/icons/header.svg" width="70" height="22" alt="Header Image" />
-        </span>
-        }
+            <Image
+              src="/icons/header.svg"
+              width="70"
+              height="22"
+              alt="Header Image"
+            />
+          </span>
+        )}
         <span onClick={toggle} className="cursor-pointer">
           <svg
             width="24"
@@ -56,12 +60,12 @@ export default function Sidebar({
       </ul> */}
       <ul className="p-5 bg-primary rounded-2xl flex flex-col gap-3">
         {menus.map((menu) => (
-          <MenuItem key={menu.id} menu={menu} isOpen={isOpen} />
+          <MenuItem key={menu.id} menu={menu} isOpen={isOpen} toggle={toggle} />
         ))}
       </ul>
       <ul className="p-5 bg-transparent rounded-2xl flex flex-col gap-3">
         {otherMenus.map((menu) => (
-          <MenuItem key={menu.id} menu={menu} isOpen={isOpen} />
+          <MenuItem key={menu.id} menu={menu} isOpen={isOpen} toggle={toggle} />
         ))}
       </ul>
     </div>

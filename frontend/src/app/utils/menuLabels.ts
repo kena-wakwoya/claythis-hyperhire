@@ -54,32 +54,34 @@ export const menus: MenuLabel[] = [
     id: 1,
     label: "Systems",
     icon: "/icons/systems.svg",
-    path: "systems",
-  children: [
+    path: "systems", // Unique path
+    isParent: true,
+    children: [
       {
         id: 2,
         label: "System Code",
         icon: "/icons/system_code.svg",
-        path: "system-code"
-},
+        path: "/system-code", // Unique path
+      },
       {
         id: 3,
         label: "Properties",
         icon: "/icons/properties.svg",
-      path: "properties"
-},
+        path: "/properties", // Unique path
+      },
       {
         id: 4,
         label: "Menus",
         icon: "/icons/menus.svg",
-        path: "",
+        path: "/"
       },
       {
         id: 5,
         label: "APIList",
         icon: "/icons/apilist.svg",
-        path: "apilists",
+        path: "/apilists"
       },
+      // Other children...
     ],
   },
 ];
@@ -89,19 +91,20 @@ export const otherMenus: MenuLabel[] = [
     id: 6,
     label: "Users & Group",
     icon: "/icons/users_group.svg",
-    path: "users-groups",
+    path: "#", // Unique path
+    isParent: true,
     children: [
       {
         id: 7,
         label: "Users",
-        icon: "",
-        path: "users",
+        icon: "/icons/users_group.svg",
+        path: "/users", // Unique path
       },
       {
         id: 8,
         label: "Group",
-        icon: "",
-        path: "group",
+        icon: "/icons/competition.svg",
+        path: "/group", // Unique path
       },
     ],
   },
@@ -109,19 +112,20 @@ export const otherMenus: MenuLabel[] = [
     id: 9,
     label: "Competition",
     icon: "/icons/competition.svg",
-    path: "competition",
+    path: "competition", // Unique path
+    isParent: true,
     children: [
       {
         id: 10,
         label: "Competitors",
-        icon: "",
-        path: "competitors",
+        icon: "/icons/competition.svg",
+        path: "/competitors", // Unique path
       },
       {
         id: 11,
         label: "Analysis",
-        icon: "",
-        path: "analysis",
+        icon: "/icons/competition.svg",
+        path: "/analysis", // Unique path
       },
     ],
   },

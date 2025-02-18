@@ -1,27 +1,44 @@
 import { useState } from "react";
 import { MenuItem as MenuItemType } from "../types";
 import Image from "next/image";
-import { useDispatch } from "react-redux";
 
 const MenuItem = ({
   menu,
-  toggle,
-  isOpen,
   onAdd,
   onDelete,
   onSubMenuSelect,
+  setIsSubMenuClicked,
+  selectedMenuId,
+  setSelectedMenuId,
+  menuOpen,
+  isAll,
 }: {
   menu: MenuItemType;
-  toggle: () => void;
-  isOpen: boolean;
   onAdd: (menuId: string) => void;
   onDelete: (menu: MenuItemType) => void;
   onSubMenuSelect: (menu: MenuItemType) => void;
+  setIsSubMenuClicked: (isSubMenuClick: boolean) => void;
+  selectedMenuId: string | null;
+  setSelectedMenuId: (menuId: string | null) => void;
+  menuOpen?: boolean;
+  isAll?: boolean; // Flag to determine whether all menus should be toggled
 }) => {
-  const [showButtons, setShowButtons] = useState(false); // State for showing buttons
-  const dispatch = useDispatch();
+  const [isOpen, setIsOpen] = useState(true); // Each menu item tracks its own state
+  const [showButtons, setShowButtons] = useState(false); // Show buttons on hover
 
-  // Show buttons when menu text is clicked
+  // Toggle submenu visibility
+  const toggleMenu = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  // Handle menu text click
+  const handleMenuTextClick = () => {
+    onSubMenuSelect(menu);
+    setIsSubMenuClicked(true);
+    setSelectedMenuId(menu.id); // Store the selected menu ID
+  };
+
+  // Handle submenu button hover
   const showMenuButtons = () => {
     setShowButtons(true);
   };
@@ -30,34 +47,22 @@ const MenuItem = ({
     setShowButtons(false);
   };
 
-  // Handle menu text click
-  const handleMenuTextClick = () => {
-    onSubMenuSelect(menu);
-    // onAdd(menu.id);
-  };
-
-  // Handle add submenu
-  const handleAdd = () => {
-    onAdd(menu.id);
-    setShowButtons(false);
-  };
-
   return (
     <li>
       <div className="menu-item">
         {/* Arrow before the menu text */}
         {menu.children && menu.children.length > 0 && (
-          <span className="arrow" onClick={toggle}>
+          <span className="arrow" onClick={toggleMenu}>
             {isOpen ? (
               <Image
-                src={"/icons/caret_up.svg"}
+                src="/icons/caret_up.svg"
                 width={26}
                 height={26}
                 alt="Caret up"
               />
             ) : (
               <Image
-                src={"/icons/caret_down.svg"}
+                src="/icons/caret_down.svg"
                 width={26}
                 height={26}
                 alt="Caret down"
@@ -65,7 +70,6 @@ const MenuItem = ({
             )}
           </span>
         )}
-
         <div
           className="flex gap-2 items-center"
           onMouseOver={showMenuButtons}
@@ -79,9 +83,10 @@ const MenuItem = ({
           {/* Buttons for add and delete */}
           {showButtons && (
             <div className="flex items-center gap-2">
+              {/* Add Button */}
               <div
                 className="flex items-center justify-center w-7 h-7 rounded-full shadow-lg bg-secondary p-2 text-white"
-                onClick={handleAdd}
+                onClick={() => onAdd(menu.id)}
               >
                 <Image
                   src={"/icons/plus.svg"}
@@ -90,6 +95,8 @@ const MenuItem = ({
                   alt="Plus icon"
                 />
               </div>
+
+              {/* Delete Button */}
               <div
                 className="flex items-center justify-center w-7 h-7 rounded-full shadow-lg bg-red-600 text-white"
                 onClick={() => onDelete(menu)}
@@ -105,55 +112,86 @@ const MenuItem = ({
           )}
         </div>
       </div>
-      {isOpen && menu.children && menu.children.length > 0 && (
-        <ul>
-          {menu.children.map((child) => (
-            <MenuItem
-              key={child.id}
-              menu={child}
-              toggle={toggle}
-              isOpen={isOpen}
-              onAdd={onAdd}
-              onDelete={onDelete}
-              onSubMenuSelect={onSubMenuSelect}
-            />
-          ))}
-        </ul>
-      )}
+
+      {/* Render children if expanded */}
+      {isAll
+        ? menuOpen &&
+          menu.children &&
+          menu.children.length > 0 && (
+            <ul className="ml-4">
+              {menu.children.map((child) => (
+                <MenuItem
+                  key={child.id}
+                  menu={child}
+                  onAdd={onAdd}
+                  onDelete={onDelete}
+                  onSubMenuSelect={onSubMenuSelect}
+                  setIsSubMenuClicked={setIsSubMenuClicked}
+                  selectedMenuId={selectedMenuId}
+                  setSelectedMenuId={setSelectedMenuId}
+                />
+              ))}
+            </ul>
+          )
+        : isOpen &&
+          menu.children &&
+          menu.children.length > 0 && (
+            <ul className="ml-4">
+              {menu.children.map((child) => (
+                <MenuItem
+                  key={child.id}
+                  menu={child}
+                  onAdd={onAdd}
+                  onDelete={onDelete}
+                  onSubMenuSelect={onSubMenuSelect}
+                  setIsSubMenuClicked={setIsSubMenuClicked}
+                  selectedMenuId={selectedMenuId}
+                  setSelectedMenuId={setSelectedMenuId}
+                />
+              ))}
+            </ul>
+          )}
     </li>
   );
 };
 
 const FileSystemMenu = ({
   menus,
-  toggle,
-  isOpen,
   onAdd,
   onDelete,
   onSubMenuSelect,
+  setIsSubMenuClicked,
+  menuOpen,
 }: {
   menus: MenuItemType[];
-  toggle: () => void;
-  isOpen: boolean;
   onAdd: (menuId: string) => void;
   onDelete: (menu: MenuItemType) => void;
   onSubMenuSelect: (menu: MenuItemType) => void;
+  setIsSubMenuClicked: (isSubMenuClick: boolean) => void;
+  menuOpen: boolean;
 }) => {
+  const [selectedMenuId, setSelectedMenuId] = useState<string | null>(null);
+
   return (
-    <div className="file-system transition-all duration-300 ease-in-out mb-5 md:mb-0">
-      <ul>
-        {menus.map((menu) => (
-          <MenuItem
-            key={menu.id}
-            menu={menu}
-            toggle={toggle}
-            isOpen={isOpen}
-            onAdd={onAdd}
-            onDelete={onDelete}
-            onSubMenuSelect={onSubMenuSelect}
-          />
-        ))}
-      </ul>
+    <div className="flex flex-col">
+      <div className="file-system transition-all duration-300 ease-in-out mb-5 md:mb-0">
+        <ul>
+          {menus.map((menu) => (
+            <MenuItem
+              key={menu.id}
+              menu={menu}
+              onAdd={onAdd}
+              onDelete={onDelete}
+              onSubMenuSelect={onSubMenuSelect}
+              setIsSubMenuClicked={setIsSubMenuClicked}
+              selectedMenuId={selectedMenuId}
+              setSelectedMenuId={setSelectedMenuId}
+              menuOpen={menuOpen}
+              isAll={true}
+            />
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

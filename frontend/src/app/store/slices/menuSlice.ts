@@ -4,10 +4,16 @@ import { MenuItem } from "../../types";
 
 interface MenuState {
   menus: MenuItem[];
+  selectedMenu: MenuItem | null;
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: MenuState = {
   menus: [],
+  selectedMenu: null,
+  loading: false,
+  error: null,
 };
 
 const menuSlice = createSlice({
@@ -17,66 +23,45 @@ const menuSlice = createSlice({
     setMenus(state, action: PayloadAction<MenuItem[]>) {
       state.menus = action.payload;
     },
-
+    setSelectedMenu(state, action: PayloadAction<MenuItem>) {
+      state.selectedMenu = action.payload;
+    },
+    setLoading(state, action: PayloadAction<boolean>) {
+      state.loading = action.payload;
+    },
+    setError(state, action: PayloadAction<string | null>) {
+      state.error = action.payload;
+    },
     addMenu(state, action: PayloadAction<MenuItem>) {
-      const newMenu = action.payload;
-
-      const addMenuRecursive = (menus: MenuItem[], newMenu: MenuItem): MenuItem[] => {
-        return menus.map((menu) => {
-          if (menu.id === newMenu.parentId) {
-            return {
-              ...menu,
-              children: menu.children ? [...menu.children, newMenu] : [newMenu],
-            };
-          }
-          return {
-            ...menu,
-            children: menu.children ? addMenuRecursive(menu.children, newMenu) : menu.children,
-          };
-        });
-      };
-
-      if (newMenu.parentId) {
-        state.menus = addMenuRecursive(state.menus, newMenu);
-      } else {
-        state.menus = [...state.menus, newMenu];
-      }
+      state.menus = [...state.menus, action.payload]; // ✅ Ensure a new array
     },
-
-    updateMenu(state, action: PayloadAction<{ menuId: string; updatedMenu: Partial<MenuItem> }>) {
-      const { menuId, updatedMenu } = action.payload;
-
-      const updateMenuRecursive = (menus: MenuItem[]): MenuItem[] => {
-        return menus.map((menu) => {
-          if (menu.id === menuId) {
-            return { ...menu, ...updatedMenu }; // Merge updates into the menu item
-          }
-          return {
-            ...menu,
-            children: menu.children ? updateMenuRecursive(menu.children) : menu.children,
-          };
-        });
-      };
-
-      state.menus = updateMenuRecursive(state.menus);
+    updateMenu(state, action: PayloadAction<MenuItem>) {
+      state.menus = state.menus.map((menu) =>
+        menu.id === action.payload.id ? { ...menu, ...action.payload } : menu
+      );
     },
-
     deleteMenu(state, action: PayloadAction<string>) {
-      const menuId = action.payload;
-
-      const deleteMenuRecursive = (menus: MenuItem[]): MenuItem[] => {
-        return menus
-          .filter((menu) => menu.id !== menuId) // Remove the matching menu
+      const deleteMenuRecursive = (menus: MenuItem[], id: string): MenuItem[] =>
+        menus
+          .filter((menu) => menu.id !== id) // ✅ Remove the menu
           .map((menu) => ({
             ...menu,
-            children: menu.children ? deleteMenuRecursive(menu.children) : menu.children,
+            children: menu.children ? deleteMenuRecursive(menu.children, id) : menu.children,
           }));
-      };
 
-      state.menus = deleteMenuRecursive(state.menus);
+      state.menus = deleteMenuRecursive(state.menus, action.payload);
     },
   },
 });
 
-export const { setMenus, addMenu, updateMenu, deleteMenu } = menuSlice.actions;
+export const {
+  setMenus,
+  setSelectedMenu,
+  setLoading,
+  setError,
+  addMenu,
+  updateMenu,
+  deleteMenu,
+} = menuSlice.actions;
+
 export default menuSlice.reducer;
