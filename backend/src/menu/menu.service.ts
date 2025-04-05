@@ -14,12 +14,12 @@ export class MenuService {
         const menu = await this.prisma.menu.findUnique({
             where: { id },    
             //here is what i need to test
-            include: { children: true },
+                    include: { children: true }
         });
         if (!menu) return null;
 
         const children = await Promise.all(
-            menu.children.map(async (child) => await this.getMenuWithChildren(child.id))
+ menu.children.map(async (child) => await this.getMenuWithChildren(child.id))
         );
 
         return { ...menu, children };
