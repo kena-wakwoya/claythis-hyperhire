@@ -1,0 +1,74 @@
+name: CI Pipeline for NestJS + Prisma
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'master'
+      - 'feature/*'
+      - 'bugfix/*'
+  pull_request:
+    branches:
+      - 'master'
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: |
+          npm install
+          npm install -g prisma
+
+      - name: Set up PostgreSQL service
+        uses: docker://postgres:13
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          until pg_isready -h localhost -p 5432; do
+            echo "Waiting for PostgreSQL to be ready...";
+            sleep 1;
+          done
+
+      - name: Run Prisma migrations
+        run: npx prisma migrate deploy
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Lint code
+        run: npm run lint
+
+  post-merge:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Deploy to Staging (Optional)
+        run: |
+          echo "Deploying to staging environment..."
+          # Add your deployment steps here (e.g., using Docker or SSH to staging server)
