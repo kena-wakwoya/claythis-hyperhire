@@ -12,7 +12,8 @@ export class MenuService {
 
     async getMenuWithChildren(id: string) {
         const menu = await this.prisma.menu.findUnique({
-            where: { id },
+            where: { id },    
+            //here is what i need to test
             include: { children: true },
         });
         if (!menu) return null;
